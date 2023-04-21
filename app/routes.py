@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, abort, make_response
 
 class Planet():
     def __init__(self, id, name, description, distance):
@@ -19,6 +19,17 @@ planet_list = [
     Planet(8, "Neptune", "A ice planet", 8)
 ]
 
+def validate_planet(planet_id):
+    try:
+        planet_id = int(planet_id)
+    except:
+        abort(make_response({"msg": f'Invalid id {planet_id}'}, 400))
+    for planet in planet_list:
+        if planet.id == planet_id:
+            return planet
+    return abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
+    
+
 
 planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
@@ -27,23 +38,11 @@ def handle_planets():
     planet_list_as_dict = [vars(planet) for planet in planet_list]
     return jsonify(planet_list_as_dict), 200
 
+@planets_bp.route("/<planet_id>", methods=["GET"])
+def handle_planet(planet_id):
+    planet = validate_planet(planet_id)
+    return {
+        "id": planet.id,
+        "name": planet.name
+    }, 200
 
-# class planet():
-#     def __init__(self, id, species, name, habitat):
-#         self.id = id
-#         self.species = species
-#         self.name = name
-#         self.habitat = habitat
-
-# planet_list = [
-#     planet(1, "Anaconda", "Nikki Minaj", "Jungle"),
-#     planet(2, "Elephant", "Dumbo", "Our childhood!!!"),
-#     planet(3, "Unicorn", "Charlie", "Youtube")
-# ]
-
-# planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
-
-# @planets_bp.route("", methods=['GET'])
-# def handle_planets():
-#     planet_list_as_dict = [vars(planet) for planet in planet_list]
-#     return jsonify(planet_list_as_dict), 200
