@@ -34,11 +34,11 @@ def validate_planet(planet_id):
         planet_id = int(planet_id)
     except:
         abort(make_response({"msg": f'Invalid id {planet_id}'}, 400))
-        all_planets = Planet.query.all()
-        for planet in all_planets:
-            if planet.id == planet_id:
-                return planet
-        return abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
+    all_planets = Planet.query.all()
+    for planet in all_planets:
+        if planet.id == planet_id:
+            return planet
+    return abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
     
 
 
@@ -65,9 +65,9 @@ def handle_planet(planet_id):
 def create_planet():
 
     request_body = request.get_json()
-    # print(request_body)
+    # print("just the request body", request_body)
     # print("HIIII", request_body["name"])
-    new_planet = Planet(name=request_body["name"])
+    new_planet = Planet(name=request_body["name"], description=request_body["description"])
 
     db.session.add(new_planet)
     db.session.commit()
