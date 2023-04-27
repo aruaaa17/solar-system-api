@@ -14,7 +14,7 @@ def create_app():
     migrate.init_app(app, db)
 
 
-    from app.models.planets import routes
+    from app.models.planets import Planet
 
     from flask import Blueprint
     from .routes import planets_bp
