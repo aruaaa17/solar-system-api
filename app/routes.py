@@ -1,4 +1,9 @@
-from flask import Blueprint, jsonify, abort, make_response
+from flask import Flask
+from flask import Blueprint, jsonify, abort, make_response, request
+from app import db
+
+
+
 
 class Planet():
     def __init__(self, id, name, description, distance):
@@ -18,6 +23,11 @@ planet_list = [
     Planet(7, "Uranus", "A ice planet", 7),
     Planet(8, "Neptune", "A ice planet", 8)
 ]
+
+def create_app():
+    app = Flask(__name__)
+
+
 
 def validate_planet(planet_id):
     try:
@@ -46,3 +56,23 @@ def handle_planet(planet_id):
         "name": planet.name
     }, 200
 
+
+@planets_bp.route("", methods=['POST'])
+def create_planet():
+
+    request_body = request.get_json()
+
+    # Use it to make an Animal
+    new_planet = Planet(name=request_body["name"])
+
+    # Persist (save, commit) it in the database
+    db.session.add(new_planet)
+    db.session.commit()
+
+    # Give back our response
+    return {
+        "id": new_planet.id,
+        "name": new_planet.name,
+        "msg": "Successfully created",
+        "description": new_planet.description
+    }, 201
