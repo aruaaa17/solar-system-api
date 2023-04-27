@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
-
+from app.models.planets import Planet
 
 
 
@@ -34,10 +34,11 @@ def validate_planet(planet_id):
         planet_id = int(planet_id)
     except:
         abort(make_response({"msg": f'Invalid id {planet_id}'}, 400))
-    for planet in planet_list:
-        if planet.id == planet_id:
-            return planet
-    return abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
+        all_planets = Planet.query.all()
+        for planet in all_planets:
+            if planet.id == planet_id:
+                return planet
+        return abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
     
 
 
@@ -45,8 +46,11 @@ planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
 @planets_bp.route("", methods=['GET'])
 def handle_planets():
-    planet_list_as_dict = [vars(planet) for planet in planet_list]
-    return jsonify(planet_list_as_dict), 200
+    all_planets = Planet.query.all() 
+    planets_response = []
+    for planet in all_planets:
+        planets_response.append(planet.to_dict())
+    return jsonify(planets_response), 200
 
 @planets_bp.route("/<planet_id>", methods=["GET"])
 def handle_planet(planet_id):
@@ -61,15 +65,13 @@ def handle_planet(planet_id):
 def create_planet():
 
     request_body = request.get_json()
-
-    # Use it to make an Animal
+    # print(request_body)
+    # print("HIIII", request_body["name"])
     new_planet = Planet(name=request_body["name"])
 
-    # Persist (save, commit) it in the database
     db.session.add(new_planet)
     db.session.commit()
 
-    # Give back our response
     return {
         "id": new_planet.id,
         "name": new_planet.name,
