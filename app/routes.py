@@ -4,26 +4,6 @@ from app import db
 from app.models.planets import Planet
 
 
-
-# class Planet():
-#     def __init__(self, id, name, description, distance):
-#         self.id = id
-#         self.name = name
-#         self.description = description
-#         self.distance = distance
-
-
-# planet_list = [
-#     Planet(1, "Mercury", "A rocky planet", 1),
-#     Planet(2, "Venus", "A rocky planet", 2),
-#     Planet(3, "Earth", "A rocky planet", 3),
-#     Planet(4, "Mars", "A gas planet", 4),
-#     Planet(5, "Jupiter", "A gas planet", 5),
-#     Planet(6, "Saturn", "A gas planet", 6),
-#     Planet(7, "Uranus", "A ice planet", 7),
-#     Planet(8, "Neptune", "A ice planet", 8)
-# ]
-
 def create_app():
     app = Flask(__name__)
 
@@ -34,11 +14,11 @@ def validate_planet(planet_id):
         planet_id = int(planet_id)
     except:
         abort(make_response({"msg": f'Invalid id {planet_id}'}, 400))
-    all_planets = Planet.query.all()
-    for planet in all_planets:
-        if planet.id == planet_id:
-            return planet
-    return abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
+
+
+    planet = Planet.query.get(planet_id)
+
+    return planet if planet else abort(make_response({"msg": f'No planet with id {planet_id}'}, 404))
     
 
 
@@ -84,4 +64,21 @@ def create_planet():
         "description": new_planet.description
     }, 201
     
+
+@planets_bp.route("/<planet_id>", methods=['PUT'])
+def update_one_planet(planet_id):
+    request_body = request.get_json()
+    planet_to_update = validate_planet(planet_id)
+    planet_to_update.name = request_body['name']
+    db.session.commit()
+    return planet_to_update.to_dict(), 200
+
+
+@planets_bp.route("/<planet_id>",methods=["DELETE"])
+def delete_one_planet(planet_id):
+    planet_to_delete = validate_planet(planet_id)
     
+    db.session.delete(planet_to_delete)
+    db.session.commit()
+    
+    return f'Animal {planet_to_delete.name} is deleted!', 200
