@@ -81,4 +81,4 @@ def delete_one_planet(planet_id):
     db.session.delete(planet_to_delete)
     db.session.commit()
     
-    return f'Animal {planet_to_delete.name} is deleted!', 200
+    return f'Planet {planet_to_delete.name} is deleted!', 200
