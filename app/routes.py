@@ -53,7 +53,7 @@ def handle_planets():
     return jsonify(planets_response), 200
 
 @planets_bp.route("/<planet_id>", methods=["GET"])
-def handle_planet(planet_id):
+def handle_single_planet(planet_id):
     planet = validate_planet(planet_id)
     return {
         "id": planet.id,
