@@ -57,11 +57,13 @@ def handle_single_planet(planet_id):
     planet = validate_planet(planet_id)
     Planet.query.get(planet_id)
     
-    return {
-        "id": planet.id,
-        "name": planet.name,
-        "description": planet.description
-    }, 200
+    # return {
+    #     "id": planet.id,
+    #     "name": planet.name,
+    #     "description": planet.description
+    # }, 200
+    
+    return jsonify(vars(planet))
 
 
 @planets_bp.route("", methods=['POST'])
@@ -81,3 +83,5 @@ def create_planet():
         "msg": "Successfully created",
         "description": new_planet.description
     }, 201
+    
+    
