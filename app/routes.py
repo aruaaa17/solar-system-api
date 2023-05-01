@@ -69,8 +69,10 @@ def create_planet():
 def update_one_planet(planet_id):
     request_body = request.get_json()
     planet_to_update = validate_planet(planet_id)
-    planet_to_update.name = request_body['name']
-    planet_to_update.description = request_body["description"]
+    if "name" in request_body:
+        planet_to_update.name = request_body['name']
+    if "description" in request_body:
+        planet_to_update.description = request_body["description"]
     db.session.commit()
     return planet_to_update.to_dict(), 200
 
