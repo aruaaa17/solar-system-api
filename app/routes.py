@@ -45,7 +45,7 @@ def validate_planet(planet_id):
 planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
 @planets_bp.route("", methods=['GET'])
-def handle_planets():
+def handle_all_planets():
     all_planets = Planet.query.all() 
     planets_response = []
     for planet in all_planets:
@@ -55,9 +55,12 @@ def handle_planets():
 @planets_bp.route("/<planet_id>", methods=["GET"])
 def handle_single_planet(planet_id):
     planet = validate_planet(planet_id)
+    Planet.query.get(planet_id)
+    
     return {
         "id": planet.id,
-        "name": planet.name
+        "name": planet.name,
+        "description": planet.description
     }, 200
 
 
