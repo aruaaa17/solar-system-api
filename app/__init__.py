@@ -11,11 +11,13 @@ load_dotenv()
 def create_app(testing=None):
     app = Flask(__name__)
     
-    if testing is None:
+    if not testing:
+        app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DEV_DATABASE_URI')
     else:
+        app.config["TESTING"] = True
+        app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('TEST_DATABASE_URI')
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate.init_app(app, db)
 
