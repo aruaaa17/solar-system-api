@@ -1,11 +1,11 @@
-from flask import Flask
+# from flask import Flask
 from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
 from app.models.planets import Planet
 
 
-def create_app():
-    app = Flask(__name__)
+# def create_app():
+#     app = Flask(__name__)
 
 
 
@@ -26,7 +26,11 @@ planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
 @planets_bp.route("", methods=['GET'])
 def handle_all_planets():
-    all_planets = Planet.query.all() 
+    name_query = request.args.get("name")
+    if name_query:
+        all_planets = Planet.query.filter_by(name=name_query)
+    else:
+        all_planets=Planet.query.all()
     planets_response = []
     for planet in all_planets:
         planets_response.append(planet.to_dict())
