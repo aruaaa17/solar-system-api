@@ -70,3 +70,13 @@ def test_delete_one_animal_updates_planet_in_db(client, two_planets):
 
     assert response.status_code == 200
     assert response_body is None
+
+
+def test_get_one_valid_animal_in_db(client, two_planets):
+    response = client.get('/planets/1')
+    response_body = response.get_json()
+
+    assert response.status_code == 200
+    assert response_body["id"] == 1
+    assert response_body["name"] == "Mars"
+    assert response_body["description"] == "It's a rocky planet."

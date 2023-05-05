@@ -11,3 +11,11 @@ class Planet(db.Model):
             "name": self.name,
             "description": self.description
         }
+    
+    @classmethod
+    def from_dict(cls, planet_details):
+        new_planet = cls(
+            name=planet_details["name"],
+            description=planet_details["description"]
+        )
+        return new_planet

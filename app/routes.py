@@ -1,11 +1,7 @@
-# from flask import Flask
 from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
 from app.models.planets import Planet
 
-
-# def create_app():
-#     app = Flask(__name__)
 
 
 
@@ -41,22 +37,14 @@ def handle_single_planet(planet_id):
     planet = validate_planet(planet_id)
     Planet.query.get(planet_id)
     
-    # return {
-    #     "id": planet.id,
-    #     "name": planet.name,
-    #     "description": planet.description
-    # }, 200
-    
-    return jsonify(vars(planet))
+    return planet.to_dict(), 200
 
 
 @planets_bp.route("", methods=['POST'])
 def create_planet():
 
     request_body = request.get_json()
-    # print("just the request body", request_body)
-    # print("HIIII", request_body["name"])
-    new_planet = Planet(name=request_body["name"], description=request_body["description"])
+    new_planet = Planet.from_dict(request_body)
 
     db.session.add(new_planet)
     db.session.commit()
@@ -74,10 +62,9 @@ def update_one_planet(planet_id):
     request_body = request.get_json()
     planet_to_update = validate_planet(planet_id)
     
-    if "name" in request_body:
-        planet_to_update.name = request_body['name']
-    if "description" in request_body:
-        planet_to_update.description = request_body["description"]
+    planet_to_update.name = request_body['name'] if 'name'in request_body else planet_to_update.name
+    planet_to_update.description = request_body['description'] if 'description'in request_body else planet_to_update.description
+    
     db.session.commit()
     return planet_to_update.to_dict(), 200
 
@@ -90,3 +77,4 @@ def delete_one_planet(planet_id):
     db.session.commit()
     
     return f'Planet {planet_to_delete.name} is deleted!', 200
+
