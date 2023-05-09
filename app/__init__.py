@@ -23,11 +23,15 @@ def create_app(testing=None):
 
 
     from app.models.planets import Planet
+    from app.models.moons import Moon
 
     from flask import Blueprint
     from .routes import planets_bp
     
     app.register_blueprint(planets_bp)
+    
+    from .routes import moons_bp
+    app.register_blueprint(moons_bp)
 
     return app
 
